@@ -60,7 +60,7 @@ class TARNET(BaseNeuralNetwork, HyperparamMixin):
             dropout=self.p_dropout,
             l2_weight=self.l2_weight,
             learning_rate=self.learning_rate,
-            num_treatments=2**self.num_treatments,
+            num_treatments=self.num_treatments,
             with_bn=self.with_bn
         )
 
