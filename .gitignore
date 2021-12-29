@@ -1,0 +1,8 @@
+venv/
+packrat/lib*/
+.Rprofile
+*.aux
+*.log
+*.pdf
+*.gz
+*.out
