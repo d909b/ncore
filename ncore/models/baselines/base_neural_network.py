@@ -171,6 +171,10 @@ class BaseNeuralNetwork(BaseModel):
         return "BaseNeuralNetwork_config.json"
 
     @staticmethod
+    def get_subclass_kwargs(config):
+        return {}
+
+    @staticmethod
     def load(save_folder_path, base_class=None):
         if base_class is None:
             base_class = BaseNeuralNetwork
@@ -194,6 +198,7 @@ class BaseNeuralNetwork(BaseModel):
         batch_size = config["batch_size"]
         num_treatments = config["num_treatments"]
         best_model_path = config["best_model_path"]
+        subclass_kwargs = base_class.get_subclass_kwargs(config)
 
         instance = base_class(
             input_shape=input_shape,
@@ -209,7 +214,8 @@ class BaseNeuralNetwork(BaseModel):
             verbose=verbose,
             batch_size=batch_size,
             best_model_path=best_model_path,
-            num_treatments=num_treatments
+            num_treatments=num_treatments,
+            **subclass_kwargs
         )
         weight_list = ModelFactory.load_weights(os.path.join(best_model_path, BaseNeuralNetwork.get_save_file_name()))
         instance.model = instance._build()

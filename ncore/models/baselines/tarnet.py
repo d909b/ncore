@@ -41,10 +41,11 @@ from ncore.models.baselines.tarnet_base.model_builder import ModelBuilder
 class TARNET(BaseNeuralNetwork, HyperparamMixin):
     def __init__(self, num_treatments=0, early_stopping_patience=13, best_model_path="", batch_size=32, num_epochs=100,
                  input_shape=(1,), output_dim=1, p_dropout=0.0, l2_weight=0.0, learning_rate=0.001, num_units=128,
-                 num_layers=2, with_bn=False, verbose=2):
+                 num_layers=2, with_bn=False, verbose=2, imbalance_loss_weight=0.0):
         super(TARNET, self).__init__(num_treatments, early_stopping_patience, best_model_path, batch_size, num_epochs,
                                      input_shape, output_dim, p_dropout, l2_weight, learning_rate, num_units,
                                      num_layers, with_bn, verbose)
+        self.imbalance_loss_weight = imbalance_loss_weight
 
     @staticmethod
     def get_hyperparameter_ranges():
@@ -61,8 +62,21 @@ class TARNET(BaseNeuralNetwork, HyperparamMixin):
             l2_weight=self.l2_weight,
             learning_rate=self.learning_rate,
             num_treatments=self.num_treatments,
-            with_bn=self.with_bn
+            with_bn=self.with_bn,
+            imbalance_loss_weight=self.imbalance_loss_weight
         )
+
+    @staticmethod
+    def get_subclass_kwargs(config):
+        imbalance_loss_weight = config["imbalance_loss_weight"]
+        return {
+            "imbalance_loss_weight": imbalance_loss_weight
+        }
+
+    def get_config(self):
+        config = super(TARNET, self).get_config()
+        config["imbalance_loss_weight"] = self.imbalance_loss_weight
+        return config
 
     @staticmethod
     def load(save_folder_path, base_class=None):
