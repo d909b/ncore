@@ -227,7 +227,7 @@ class MTVAE(nn.Module):
 
         return probs
 
-    def predictY(self, zt_sample, zi_sample_list, c_sample, adj_batch):
+    def _predictY_internal(self, zt_sample, zi_sample_list, c_sample, adj_batch):
         # concat zi
         zi_all = None  # batch x (K x d)
         for k in range(len(zi_sample_list)):  # every cluster
@@ -243,6 +243,11 @@ class MTVAE(nn.Module):
         logvar_y = torch.ones_like(mu_y).to(self.device)
 
         return mu_y, logvar_y
+
+    def predictY(self, adj_batch, input_treat_trn):
+        mu_zt, logvar_zt, mu_p_zt, logvar_p_zt, qc, mu_zi_list, logvar_zi_list, zi_sample_list, a_pred, \
+            mu_y, logvar_y, a_reconstby_zt = self(adj_batch, input_treat_trn)
+        return self._predictY_internal(mu_zt, zi_sample_list, None, adj_batch)
 
     def forward(self, input_ins, input_treat):
         # encoder: zt, zi
@@ -268,7 +273,7 @@ class MTVAE(nn.Module):
 
         # decoder
         a_pred = self.decoder(zt_sample, zi_sample_list, c_sample)
-        mu_y, logvar_y = self.predictY(zt_sample, zi_sample_list, c_sample, input_ins)  # n x 1
+        mu_y, logvar_y = self._predictY_internal(zt_sample, zi_sample_list, c_sample, input_ins)  # n x 1
 
         return mu_zt, logvar_zt, self.mu_p_zt, self.logvar_p_zt, cates, mu_zi_list, logvar_zi_list, zi_sample_list, \
                a_pred, mu_y, logvar_y, a_reconstby_zt

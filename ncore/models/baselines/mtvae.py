@@ -54,6 +54,7 @@ class MTVAE(BaseModel, HyperparamMixin):
         super(MTVAE, self).__init__(num_treatments)
         self.model = None
         self.verbose = verbose
+        self.input_treat = None
         self.l2_weight = l2_weight
         self.num_units = num_units
         self.num_epochs = num_epochs
@@ -71,11 +72,10 @@ class MTVAE(BaseModel, HyperparamMixin):
         if self.model is None:
             raise AssertionError("Model must be __fit__ before calling __predict__.")
 
-        concatenated_covariates = np.concatenate([x, m, h], axis=-1)
-        y_pred = self.model([
-            torch.from_numpy(concatenated_covariates.astype(np.float32)),
-            torch.from_numpy(t.astype(np.float32))
-        ]).detach().numpy()
+        y_pred = self.model.predictY(
+            torch.from_numpy(t.astype(np.float32)),
+            torch.from_numpy(self.input_treat.T.astype(np.float32)),
+        )[0].detach().numpy()
         return y_pred
 
     def _make_loader(self, concatenated_covariates):
@@ -128,10 +128,11 @@ class MTVAE(BaseModel, HyperparamMixin):
         optimizer = [optimizer_1, optimizer_2, optimizer_3, optimizer_4]
         self.model.fit(self.num_epochs, self.num_treatments, loader_train, input_treat_trn, optimizer)
 
-    def _build(self, train_treatment_indicators):
+    def _build(self, input_treat):
+        self.input_treat = input_treat
         return MTVAEBase(
             num_treatments=self.num_treatments,
-            num_train_samples=len(train_treatment_indicators),
+            num_train_samples=len(input_treat),
             dim_zi=self.num_units,
             dim_zt=self.num_units
         )
@@ -182,14 +183,16 @@ class MTVAE(BaseModel, HyperparamMixin):
             best_model_path=best_model_path,
             num_treatments=num_treatments
         )
+        instance.input_treat = np.load(os.path.join(save_folder_path, MTVAE.get_array_save_file_name()))
         weight_list = torch.load(os.path.join(best_model_path, MTVAE.get_save_file_name()))
-        instance.model = instance._build()
+        instance.model = instance._build(instance.input_treat)
         instance.model.load_state_dict(weight_list)
         return instance
 
     def save(self, save_folder_path, overwrite=True):
         BaseModel.save_config(save_folder_path, self.get_config(), self.get_config_file_name(), overwrite,
                               MTVAE)
+        np.save(os.path.join(save_folder_path, MTVAE.get_array_save_file_name()), self.input_treat)
         torch.save(
             self.model.state_dict(),
             os.path.join(save_folder_path, MTVAE.get_save_file_name())
@@ -198,3 +201,7 @@ class MTVAE(BaseModel, HyperparamMixin):
     @staticmethod
     def get_save_file_name():
         return "model.pt"
+
+    @staticmethod
+    def get_array_save_file_name():
+        return "model.npy"
