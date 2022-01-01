@@ -97,7 +97,7 @@ class BaseApplication(HyperparameterMixin):
 
         import torch
         torch.manual_seed(0)
-        torch.set_deterministic(True)
+        torch.use_deterministic_algorithms(True)
         torch.backends.cudnn.benchmark = False
 
         np.random.seed(0)
