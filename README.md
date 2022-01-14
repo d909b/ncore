@@ -22,6 +22,7 @@ Installation should finish within minutes on standard hardware. This software ha
 ## Datasets
 
 CRISPR-KO data is from [Zhou et al. 2020](https://www.sciencedirect.com/science/article/pii/S2211124720310056).
+Euresist (http://engine.euresist.org/database/)
 
 Access to the EuResist HIV cohort data can be requested by bona-fide researchers
 from the [EuResist network](https://www.euresist.org/).
