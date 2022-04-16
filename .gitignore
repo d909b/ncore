@@ -6,3 +6,5 @@ packrat/lib*/
 *.pdf
 *.gz
 *.out
+*.pyc
+.DS_Store
