@@ -86,6 +86,8 @@ class PreparePlotsApplication(object):
                 f"cat {fname} | grep 'train_model took' | awk '{{print $5}}'", stdout=subprocess.PIPE, shell=True
             )
             average_times = process.communicate()[0].decode("utf-8").strip()
+            if average_times == "":
+                continue
             average_times = list(map(lambda x: float(x.strip()), average_times.strip().split("\n")))
             results[method] = average_times
         return results
@@ -101,6 +103,8 @@ class PreparePlotsApplication(object):
                 f"cat {fname} | grep 'evaluate_model took' | awk '{{print $5}}'", stdout=subprocess.PIPE, shell=True
             )
             average_times = process.communicate()[0].decode("utf-8").strip()
+            if average_times == "":
+                continue
             average_times = list(map(lambda x: float(x.strip()), average_times.strip().split("\n")))
             results[method] = average_times
         return results
@@ -112,17 +116,19 @@ class PreparePlotsApplication(object):
             if dataset.startswith("crispr"):
                 methods = [
                     "BalancedCounterfactualRelationEstimator", "CounterfactualRelationEstimatorNoMixing",
-                    "Deconfounder", "GANITE", "GaussianProcess", "KNearestNeighbours", "LinearRegression", "TARNET"
+                    "Deconfounder", "GANITE", "GaussianProcess", "KNearestNeighbours", "LinearRegression", "TARNET",
+                    "BalancedTARNET"  # , "MTVAE"
                 ]
             elif dataset.startswith("europe") and dataset.find("synthetic") == -1:
                 methods = [
                     "BalancedCounterfactualRelationEstimator", "CounterfactualRelationEstimatorNoMixing",
-                    "GaussianProcess", "KNearestNeighbours", "LinearRegression"
+                    "GaussianProcess", "KNearestNeighbours", "LinearRegression", "TARNET", "BalancedTARNET"  # , "MTVAE"
                 ]
             else:
                 methods = [
                     "BalancedCounterfactualRelationEstimator", "CounterfactualRelationEstimatorNoMixing",
-                    "Deconfounder", "GANITE", "GaussianProcess", "KNearestNeighbours", "LinearRegression", "TARNET"
+                    "Deconfounder", "GANITE", "GaussianProcess", "KNearestNeighbours", "LinearRegression", "TARNET",
+                    "BalancedTARNET"  # , "MTVAE"
                 ]
 
             y_axis_label = "RMSE"
@@ -163,7 +169,7 @@ class PreparePlotsApplication(object):
             dataset = "simulator-2000-{num_treatments:d}".format(num_treatments=int(num_treatments))
             methods = [
                 "BalancedCounterfactualRelationEstimator", "CounterfactualRelationEstimatorNoMixing", "GaussianProcess",
-                "KNearestNeighbours", "LinearRegression"
+                "KNearestNeighbours", "LinearRegression", "BalancedTARNET"  # , "MTVAE"
             ]
             if int(num_treatments) <= 5:
                 methods.append("TARNET")
@@ -191,7 +197,7 @@ class PreparePlotsApplication(object):
             dataset = "simulator-2000-{num_treatments:d}".format(num_treatments=int(num_treatments))
             methods = [
                 "BalancedCounterfactualRelationEstimator", "CounterfactualRelationEstimatorNoMixing", "GaussianProcess",
-                "KNearestNeighbours", "LinearRegression"
+                "KNearestNeighbours", "LinearRegression", "BalancedTARNET"  # , "MTVAE"
             ]
             if int(num_treatments) <= 5:
                 methods.append("TARNET")
@@ -225,7 +231,7 @@ class PreparePlotsApplication(object):
             dataset = "simulator-{num_samples:d}-5".format(num_samples=int(num_samples))
             methods = [
                 "BalancedCounterfactualRelationEstimator", "CounterfactualRelationEstimatorNoMixing", "Deconfounder",
-                "GANITE", "GaussianProcess", "KNearestNeighbours", "LinearRegression", "TARNET"
+                "GANITE", "GaussianProcess", "KNearestNeighbours", "LinearRegression", "TARNET", "BalancedTARNET"  # , "MTVAE"
             ]
             file_name = "num_samples_results.pdf"
             results = self.get_eval_results(dataset, methods)
@@ -248,7 +254,7 @@ class PreparePlotsApplication(object):
             )
             methods = [
                 "BalancedCounterfactualRelationEstimator", "CounterfactualRelationEstimatorNoMixing", "Deconfounder",
-                "GANITE", "GaussianProcess", "KNearestNeighbours", "LinearRegression", "TARNET"
+                "GANITE", "GaussianProcess", "KNearestNeighbours", "LinearRegression", "TARNET", "BalancedTARNET"  # , "MTVAE"
             ]
             file_name = "treatment_assignment_bias_results.pdf"
             results = self.get_eval_results(dataset, methods)

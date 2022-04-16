@@ -26,6 +26,14 @@ CRISPR-KO data is from [Zhou et al. 2020](https://www.sciencedirect.com/science/
 Access to the EuResist HIV cohort data can be requested by bona-fide researchers
 from the [EuResist network](https://www.euresist.org/).
 
+Once you have access to the above datasets, the following files must be placed in the following locations to run Europe1, Europe2 and CRISPR-KO experiments:
+
+- `achilles-gene-effect_20q4.h5` in `./crisprko-3way/` in the same directory that [this file](README.md) is placed (next to [ncore](ncore)).
+- `crispr-3-way.csv` in `./crisprko-3way/` in the same directory that [this file](README.md) is placed.
+- `gene-list-crispr-3-way.csv` in `./crisprko-3way/` in the same directory that [this file](README.md) is placed.
+- `tce-dose-all.csv` in `./europe1/` in the same directory that [this file](README.md) is placed.
+- `Europe2.RData` in `./europe1/` in the same directory that [this file](README.md) is placed.
+
 ## Use
 
 The program can be initiated to compute results for training a combinatorial `$method` model (model names correspond to classes present in the `ncore.models.baselines` python package) on semi-synthetic data with outcomes simulated based on the `$dataset` dataset from the command line as follows:
@@ -65,7 +73,7 @@ Please consider citing, if you reference or use our methodology, code or results
 
 ### License
 
-[MIT License](LICENSE.txt)
+[See LICENSE.txt](LICENSE.txt)
 
 ### Authors
 

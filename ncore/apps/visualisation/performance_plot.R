@@ -37,8 +37,8 @@ palette <- c(
   "Ridge"=palette[5],
   "TARNET"=palette[6],
   "Deconfounder"=palette[7],
-  "NCoRE"=palette[8]
-)
+  "NCoRE"=palette[8],
+  "TARNET\n(balanced)"=palette[6])
 
 options(stringsAsFactors=FALSE)
 set.seed(909)
@@ -67,7 +67,9 @@ name_map[["GaussianProcess"]] = "GP"
 name_map[["KNearestNeighbours"]] = "kNN"
 name_map[["LinearRegression"]] = "Ridge"
 name_map[["TARNET"]] = "TARNET"
+name_map[["BalancedTARNET"]] = "TARNET\n(balanced)"
 name_map[["Deconfounder"]] = "Deconfounder"
+name_map[["MTVAE"]] = "MTVAE"
 
 color_map <- new.env(hash = TRUE)
 color_map[["CounterfactualRelationEstimator"]] = "0"
@@ -79,6 +81,8 @@ color_map[["LinearRegression"]] = "4"
 color_map[["TARNET"]] = "5"
 color_map[["Deconfounder"]] = "7"
 color_map[["BalancedCounterfactualRelationEstimator"]] = "8"
+color_map[["BalancedTARNET"]] = "9"
+color_map[["MTVAE"]] = "10"
 
 min_values <- new.env(hash = TRUE)
 max_values <- new.env(hash = TRUE)
@@ -101,8 +105,10 @@ collapsed$max <- lapply(collapsed$names, function(x) max_values[[x]])
 collapsed$median <- lapply(collapsed$names, function(x) median_values[[x]])
 
 collapsed$color <- factor(collapsed$converted_names,
-                          levels=c("GANITE", "GP", "kNN", "Ridge", "TARNET", "Deconfounder", "NCoRE", "NCoRE\n(balanced)"),
-                          labels=c("GANITE", "GP", "kNN", "Ridge", "TARNET", "Deconfounder", "NCoRE", "NCoRE\n(balanced)"))
+                          levels=c("GANITE", "GP", "kNN", "Ridge", "TARNET", "Deconfounder", "NCoRE", "NCoRE\n(balanced)",
+                                   "BalancedCounterfactualRelationEstimator", "BalancedTARNET", "MTVAE"),
+                          labels=c("GANITE", "GP", "kNN", "Ridge", "TARNET", "Deconfounder", "NCoRE", "NCoRE\n(balanced)",
+                                   "BalancedCounterfactualRelationEstimator", "BalancedTARNET", "MTVAE"))
 
 pdf(file.path(output_directory, file_name), width=5, height=3.6)
 
@@ -131,4 +137,5 @@ p <- ggplot(collapsed, aes(x=reorder(converted_names, as.numeric(median)), y=as.
         , plot.title = element_text(hjust = 0.5, size=20, face="bold")
   ) + scale_fill_manual(values = palette) + scale_color_manual(values = palette)
 print(p)
+
 dev.off()
